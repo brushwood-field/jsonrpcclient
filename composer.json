@@ -1,0 +1,19 @@
+{
+    "name": "brushwoodfield/jsonrpcclient",
+    "description": "composer jsonrpclient",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Brushwood Field",
+            "email": "brushwoodfield@deim.me"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Brushwoodfield\\JsonRPCClient\\": "src/"
+        }
+    }
+}

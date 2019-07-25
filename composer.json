@@ -1,0 +1,14 @@
+{
+    "name": "brushwoodfield/jsonrpcclient",
+    "description": "composer jsonrpclient",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Brushwood Field",
+            "email": "shibata@deim.me"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {}
+}

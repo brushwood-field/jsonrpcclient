@@ -6,9 +6,14 @@
     "authors": [
         {
             "name": "Brushwood Field",
-            "email": "shibata@deim.me"
+            "email": "brushwoodfield@deim.me"
         }
     ],
     "minimum-stability": "stable",
-    "require": {}
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Brushwoodfield\\JsonRPCClient\\": "src/"
+        }
+    }
 }

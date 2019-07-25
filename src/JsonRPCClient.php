@@ -1,78 +1,53 @@
 <?php
 
-namespace Booleanlogic\JsonRPCClient;
-
-/*
-                    COPYRIGHT
-
-Copyright 2007 Sergio Vaccaro <sergio@inservibile.org>
-
-This file is part of JSON-RPC PHP.
-
-JSON-RPC PHP is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-JSON-RPC PHP is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with JSON-RPC PHP; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-*/
+namespace Brushwoodfield\JsonRPCClient;
 
 /**
  * The object of this class are generic jsonRPC 1.0 clients
  * http://json-rpc.org/wiki/specification
  *
  * @author sergio <jsonrpcphp@inservibile.org>
+ * @author brushwoodfield <brushwoodfield@deim.me>
  */
 class jsonRPCClient
 {
 
     /**
-     * Debug state
-     *
-     * @var boolean
+     * @var boolean Debug state
      */
     private $debug;
-
     /**
-     * The server URL
-     *
-     * @var string
+     * @var string The server URL
      */
     private $url;
     /**
-     * The request id
-     *
-     * @var integer
+     * @var string The proxy URL. ex, http://192.168.10.10:8080
+     */
+    private $proxy;
+    /**
+     * @var integer The request id
      */
     private $id;
     /**
-     * If true, notifications are performed instead of requests
-     *
-     * @var boolean
+     * @var boolean If true, notifications are performed instead of requests
      */
     private $notification = false;
 
     /**
      * Takes the connection parameters
      *
-     * @param string $url
+     * @param string  $url
+     * @param string  $proxy
      * @param boolean $debug
      */
-    public function __construct($url, $debug = false)
+    public function __construct($url, $proxy = null, $debug = false)
     {
         // server URL
         $this->url = $url;
         // proxy
-        empty($proxy) ? $this->proxy = '' : $this->proxy = $proxy;
+        $this->proxy = empty($proxy) ? null: $proxy;
         // debug state
-        empty($debug) ? $this->debug = false : $this->debug = true;
+        $this->debug = empty($debug) ? false: true;
         // message id
         $this->id = 1;
     }
@@ -84,10 +59,7 @@ class jsonRPCClient
      */
     public function setRPCNotification($notification)
     {
-        empty($notification) ?
-            $this->notification = false
-            :
-            $this->notification = true;
+        $this->notification = empty($notification) ? false: true;
     }
 
     /**
@@ -102,7 +74,7 @@ class jsonRPCClient
 
         // check
         if (!is_scalar($method)) {
-            throw new \Exception('Method name has no scalar value');
+            throw new \RuntimeException('Method name has no scalar value');
         }
 
         // check
@@ -110,7 +82,7 @@ class jsonRPCClient
             // no keys
             $params = array_values($params);
         } else {
-            throw new \Exception('Params must be given as array');
+            throw new \RuntimeException('Params must be given as array');
         }
 
         // sets notification or request task
@@ -135,6 +107,9 @@ class jsonRPCClient
             'header'  => 'Content-type: application/json',
             'content' => $request
         ));
+        if ($this->proxy) {
+            $this->with_proxy($opts);
+        }
         $context  = stream_context_create($opts);
         if ($fp = fopen($this->url, 'r', false, $context)) {
             $response = '';
@@ -166,5 +141,21 @@ class jsonRPCClient
         } else {
             return true;
         }
+    }
+
+    /**
+     * If use proxy, aditional proxy option
+     *
+     * @param  array $opts reference
+     * @return void
+     */
+    private function with_proxy(&$opts)
+    {
+        array_merge($opts, array(
+            'http' => array(
+                'proxy' => $this->proxy,
+                'request_fulluri' => true,
+            ),
+        ));
     }
 }
